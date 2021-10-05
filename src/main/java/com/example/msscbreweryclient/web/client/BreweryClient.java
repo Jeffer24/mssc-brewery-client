@@ -1,6 +1,7 @@
 package com.example.msscbreweryclient.web.client;
 
 import com.example.msscbreweryclient.web.model.BeerDto;
+import com.example.msscbreweryclient.web.model.CustomerDto;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Component;
@@ -13,7 +14,15 @@ import java.util.UUID;
 @ConfigurationProperties(value = "sfg.brewery", ignoreUnknownFields = false)
 public class BreweryClient {
 
+    /*
+     * @param apihost String.
+     */
+    public void setApihost(String apihost) {
+        this.apihost = apihost;
+    }
+
     public final String BEER_PATH_V1 = "/api/v1/beer/";
+    public final String CUSTOMER_PATH_V1 = "/api/v1/customer/";
     private String apihost;
     private final RestTemplate restTemplate;
 
@@ -37,10 +46,22 @@ public class BreweryClient {
         restTemplate.delete(apihost + BEER_PATH_V1 + "/" + id.toString());
     }
 
-    /*
-     * @param apihost String.
-     */
-    public void setApihost(String apihost) {
-        this.apihost = apihost;
+    // Customer Client
+    public CustomerDto getCustomerById(UUID id) {
+        return restTemplate.getForObject(apihost + CUSTOMER_PATH_V1 + id.toString(), CustomerDto.class);
     }
+
+    public URI saveNewCustomer(CustomerDto customerDto) {
+        return restTemplate.postForLocation(apihost + CUSTOMER_PATH_V1, customerDto);
+    }
+
+    public void updateCustomer(UUID id, CustomerDto customerDto) {
+        restTemplate.put(apihost + CUSTOMER_PATH_V1 + "/" + id.toString(), customerDto);
+    }
+
+    public void deleteCustomer(UUID id) {
+        restTemplate.delete(apihost + CUSTOMER_PATH_V1 + "/" + id.toString());
+    }
+
+
 }
